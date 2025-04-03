@@ -1,0 +1,846 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: white;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+}
+
+.status-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.network {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.app-container {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    min-width: 320px;
+    margin: 0 auto;
+    padding: 10px 0 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    gap: 20px;
+}
+
+.empty-space {
+    width: 24px;
+    height: 24px;
+}
+
+.progress-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.progress-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #eee;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #32CD70;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.swipe-hint {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    gap: 10px;
+    color: #999;
+    font-size: 13px;
+}
+
+.swipe-arrow {
+    color: #32CD70;
+    animation: pulse 1.5s infinite;
+}
+
+.swipe-arrow.prev {
+    animation-delay: 0.75s;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+}
+
+.word-cards-slider {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    padding-bottom: 80px;
+    perspective: 1500px;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    transform-style: preserve-3d;
+    will-change: transform;
+    touch-action: pan-y;
+}
+
+.word-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.5s ease;
+    pointer-events: none;
+    padding-bottom: 0;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.word-card.animating {
+    pointer-events: none !important;
+}
+
+.word-card.prev {
+    transform: translateX(-100%) scale(0.8) rotate(-5deg);
+    opacity: 0.5;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.5s ease;
+}
+
+.word-card.active {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    z-index: 2;
+    pointer-events: auto;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.5s ease;
+}
+
+.word-card.next {
+    transform: translateX(100%) scale(0.8) rotate(5deg);
+    opacity: 0.5;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.5s ease;
+}
+
+.card-inner {
+    width: 90%;
+    max-width: 340px;
+    height: auto;
+    min-height: 250px;
+    margin: 0 auto;
+    padding: 20px 20px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 24px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    border: 1px solid rgba(230, 230, 230, 0.7);
+    aspect-ratio: auto;
+    will-change: transform, box-shadow;
+    transform-origin: center center;
+}
+
+.word-card.active .card-inner {
+    box-shadow: 0 15px 35px rgba(50, 205, 112, 0.1);
+    border: 1px solid rgba(50, 205, 112, 0.2);
+}
+
+.word {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+.pronunciation {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    font-weight: 300;
+}
+
+.card-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 15px 0 24px;
+    width: 100%;
+}
+
+.meaning-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.type-meaning {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.type {
+    color: #32CD70;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.example {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #777;
+    font-style: italic;
+    padding-left: 12px;
+    border-left: 2px solid #32CD70;
+    margin-top: 4px;
+}
+
+.bottom-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 0;
+    margin-bottom: 0;
+    position: absolute;
+    bottom: 90px;
+    left: 0;
+    right: 0;
+    z-index: 15;
+    background-color: transparent;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 8px;
+}
+
+.action-btn:hover svg {
+    transform: scale(1.1);
+}
+
+.action-btn:active svg {
+    transform: scale(0.95);
+}
+
+.action-btn svg {
+    transition: all 0.2s ease;
+}
+
+.bookmark-btn svg path {
+    transition: all 0.2s ease;
+}
+
+.bookmark-btn.active svg path {
+    fill: #32CD70;
+    stroke: #32CD70;
+}
+
+.tab-bar {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 0;
+    box-shadow: none;
+    z-index: 25;
+    width: 100%;
+    margin-top: auto;
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.tab-item span {
+    font-size: 12px;
+    color: #999;
+}
+
+.tab-item.active {
+    background-color: rgba(50, 205, 112, 0.05);
+}
+
+.tab-item.active span {
+    color: #32CD70;
+    font-weight: 500;
+}
+
+/* 토스트 메시지 */
+.toast {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: rgba(51, 51, 51, 0.9);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    max-width: 90%;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    background-color: rgba(50, 205, 112, 0.95);
+}
+
+.toast.error {
+    background-color: rgba(255, 76, 76, 0.95);
+}
+
+.toast.info {
+    background-color: rgba(51, 51, 51, 0.9);
+}
+
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-message {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .card-inner {
+        width: 92%;
+        padding: 18px 18px;
+        min-height: 250px;
+    }
+    
+    .word {
+        font-size: 26px;
+    }
+    
+    .pronunciation {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .type-meaning {
+        font-size: 16px;
+    }
+    
+    .example {
+        font-size: 14px;
+    }
+    
+    .bottom-actions {
+        padding: 0;
+        bottom: 85px;
+    }
+}
+
+/* 드래그 관련 스타일 */
+.word-card.dragging {
+    transition: none !important;
+    pointer-events: auto !important;
+    touch-action: none !important;
+    user-select: none;
+}
+
+.word-card.dragging .card-inner {
+    transition: none !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    will-change: transform;
+}
+
+/* 드래그 중 커서 변경 */
+.word-cards-slider.dragging {
+    cursor: grabbing !important;
+    touch-action: none !important;
+    user-select: none;
+}
+
+.word-card {
+    cursor: grab;
+}
+
+/* 활성 카드가 드래그되는 동안 조금 들어 올리는 효과 */
+.word-card.active.dragging .card-inner {
+    box-shadow: 0 18px 35px rgba(50, 205, 112, 0.15);
+}
+
+/* 접근성 향상을 위한 아웃라인 처리 */
+.word-card:focus-visible {
+    outline: 2px solid #32CD70;
+    outline-offset: 4px;
+}
+
+/* 키보드 사용자를 위한 포커스 스타일 */
+.word-card:focus {
+    outline: none;
+}
+
+/* 터치 장치 최적화 */
+@media (hover: none) and (pointer: coarse) {
+    .word-card {
+        transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                    opacity 0.4s ease;
+    }
+    
+    .card-inner {
+        transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+}
+
+/* 모바일뷰 스타일 */
+@media screen and (max-width: 420px) {
+    body {
+        background-color: white;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .app-container {
+        box-shadow: none;
+        flex: 1;
+        height: 100vh;
+        width: 100%;
+    }
+    
+    .tab-bar {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 421px) {
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .app-container {
+        border-radius: 30px;
+        width: calc(100vh * 9/16);
+        max-width: 420px;
+        min-width: 320px;
+        height: 95vh;
+        max-height: 780px;
+        min-height: 500px;
+        background-color: white;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tab-bar {
+        border-radius: 0 0 30px 30px;
+        position: relative;
+        bottom: 0;
+        margin-top: auto;
+        border-top: 0;
+        background-color: white;
+        z-index: 25;
+        width: 100%;
+    }
+    
+    .card-inner {
+        height: auto;
+        max-height: 70vh;
+    }
+    
+    .app-container::after {
+        content: '';
+        display: none;
+    }
+
+    .word-cards-slider {
+        flex: 1;
+        padding-bottom: 60px;
+    }
+
+    .bottom-actions {
+        bottom: 70px;
+    }
+}
+
+/* 큰 화면 대응을 위한 새로운 미디어 쿼리 */
+@media screen and (min-width: 1200px) {
+    .app-container {
+        max-width: 420px;
+        max-height: 780px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tab-bar {
+        max-width: 420px;
+    }
+}
+
+/* 작은 화면 대응 */
+@media screen and (max-height: 600px) {
+    .word-cards-slider {
+        padding-bottom: 50px;
+    }
+
+    .bottom-actions {
+        bottom: 60px;
+    }
+
+    .toast {
+        bottom: 80px;
+    }
+}
+
+/* 북마크 페이지 스타일 */
+.bookmark-page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0 0 0;
+    position: relative;
+}
+
+.bookmark-header {
+    padding: 10px 20px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.bookmark-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+}
+
+.empty-bookmark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-bookmark svg {
+    margin-bottom: 16px;
+}
+
+.empty-bookmark p {
+    font-size: 16px;
+    color: #999;
+    margin-bottom: 24px;
+}
+
+.return-btn {
+    background-color: #32CD70;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.return-btn:hover {
+    background-color: #28b058;
+}
+
+.bookmark-list {
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    flex: 1;
+    padding-bottom: 80px;
+}
+
+.bookmark-item {
+    background-color: white;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bookmark-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.bookmark-content {
+    flex: 1;
+}
+
+.bookmark-content h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #222;
+}
+
+.bookmark-content p {
+    margin: 3px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.remove-bookmark-btn {
+    background: none;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-bookmark-btn:hover {
+    background-color: #f5f5f5;
+}
+
+/* 북마크 상세 페이지 */
+.bookmark-detail {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0 0 0;
+    position: relative;
+}
+
+.bookmark-detail-header {
+    padding: 10px 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.bookmark-detail-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #333;
+    font-weight: 600;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.back-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.bookmark-detail-card {
+    margin: 20px;
+    padding: 25px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 24px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(230, 230, 230, 0.7);
+    margin-bottom: 80px;
+    flex: 1;
+}
+
+.bookmark-detail-card .word {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: #222;
+}
+
+.bookmark-detail-card .pronunciation {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    font-weight: 300;
+}
+
+.bookmark-detail-card .card-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 15px 0 24px;
+    width: 100%;
+}
+
+.bookmark-detail-card .meaning-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.bookmark-detail-card .type-meaning {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.bookmark-detail-card .example {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #777;
+    font-style: italic;
+    padding-left: 12px;
+    border-left: 2px solid #32CD70;
+    margin-top: 4px;
+}
+
+/* 북마크 페이지의 탭 바 스타일 */
+.bookmark-page .tab-bar,
+.bookmark-detail .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border-top: 1px solid #eeeeee;
+    z-index: 10;
+}
+
+/* 모바일 뷰에서 북마크 페이지 스타일 조정 */
+@media screen and (max-width: 420px) {
+    .bookmark-page, 
+    .bookmark-detail {
+        height: 100%;
+    }
+    
+    .bookmark-list {
+        padding-bottom: 70px;
+    }
+} 
